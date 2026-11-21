@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}पंचांग उपयोगिताएँ - राहु काल, अभिजीत मुहूर्त, गण्ड मूल, भद्रा - ज्योतिषविद्या{% endblock %}
+{% block description %}राहु काल, यमगण्ड, गुलिक काल, अभिजीत मुहूर्त, गण्ड मूल व भद्रा (विष्टि करण) — {{ city.name }} के लिए आज की पूरी जानकारी।{% endblock %}
+{% block content %}
+<h1 class="section-title">पंचांग उपयोगिताएँ — {{ now.strftime('%d %B %Y') }} ({{ city.name }})</h1>
+
+<form class="city-select" method="get" style="margin-bottom:14px;">
+  <select name="city" onchange="this.form.submit()">
+    {% for key, c in cities.items() %}
+    <option value="{{ key }}" {% if key==city_key %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<div class="panchang-grid">
+  <div class="p-item"><div class="label">राहु काल</div><div class="value">{{ rahu_kalam.rahu_kaal[0] | fmt_t }} - {{ rahu_kalam.rahu_kaal[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">यमगण्ड</div><div class="value">{{ rahu_kalam.yamaganda[0] | fmt_t }} - {{ rahu_kalam.yamaganda[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">गुलिक काल</div><div class="value">{{ rahu_kalam.gulika_kaal[0] | fmt_t }} - {{ rahu_kalam.gulika_kaal[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">अभिजीत मुहूर्त (शुभ)</div><div class="value">{{ abhijit[0] | fmt_t }} - {{ abhijit[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">गण्ड मूल नक्षत्र आज?</div><div class="value">{{ "हाँ" if ganda_moola else "नहीं" }}</div></div>
+  <div class="p-item"><div class="label">भद्रा (विष्टि करण) आज?</div><div class="value">{{ "हाँ" if bhadra else "नहीं" }}</div></div>
+</div>
+
+<h2 class="section-title" style="font-size:1.1rem;">इन कालों का अर्थ</h2>
+<table class="list-table">
+  <tr><th>नाम</th><th>विवरण</th></tr>
+  <tr><td>राहु काल</td><td>दिन के 8 भागों में से राहु के स्वामित्व वाला अशुभ काल, जिसमें नया कार्य आरम्भ नहीं किया जाता।</td></tr>
+  <tr><td>यमगण्ड</td><td>यमराज से सम्बंधित अशुभ काल, शुभ कार्यों हेतु वर्जित माना जाता है।</td></tr>
+  <tr><td>गुलिक काल</td><td>शनि-पुत्र गुलिक से सम्बंधित अर्ध-अशुभ काल, महत्वपूर्ण कार्यों में सावधानी बरतें।</td></tr>
+  <tr><td>अभिजीत मुहूर्त</td><td>दिन का 8वाँ मुहूर्त (सूर्य के ठीक मध्याह्न के आस-पास), लगभग सभी दोषों को दूर करने वाला अत्यंत शुभ काल।</td></tr>
+  <tr><td>गण्ड मूल नक्षत्र</td><td>अश्विनी, आश्लेषा, मघा, ज्येष्ठा, मूल व रेवती — इन नक्षत्रों में जन्म या शुभ कार्य हेतु विशेष शांति का विधान बताया जाता है।</td></tr>
+  <tr><td>भद्रा (विष्टि करण)</td><td>विष्टि करण के समय को भद्रा काल कहा जाता है, जिसमें शुभ व मांगलिक कार्य वर्जित माने जाते हैं।</td></tr>
+</table>
+<p><a href="{{ url_for('muhurat') }}?city={{ city_key }}">चौघड़िया व पूर्ण मुहूर्त तालिका देखें →</a></p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

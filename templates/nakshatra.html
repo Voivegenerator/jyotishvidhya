@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}27 नक्षत्र सूची व आज का नक्षत्र - ज्योतिषविद्या{% endblock %}
+{% block description %}27 नक्षत्रों की पूरी सूची, उनके स्वामी ग्रह और गण्ड मूल नक्षत्रों की जानकारी। {{ city.name }} के लिए आज का नक्षत्र।{% endblock %}
+{% block content %}
+<h1 class="section-title">नक्षत्र विवरण — {{ city.name }}</h1>
+<div class="hero-panchang">
+  <p style="color:#8a6a4a;margin-top:0;">{{ now.strftime('%d %B %Y') }}, {{ p.vara_name_hi }}</p>
+  <div class="panchang-grid">
+    <div class="p-item"><div class="label">आज का नक्षत्र</div><div class="value">{{ p.nakshatra_name_hi }} (पद {{ p.pada }})</div></div>
+    <div class="p-item"><div class="label">नक्षत्र स्वामी</div><div class="value">{{ nak_list[p.nakshatra_index].lord }}</div></div>
+    <div class="p-item"><div class="label">गण्ड मूल नक्षत्र?</div><div class="value">{{ "हाँ" if nak_list[p.nakshatra_index].ganda_moola else "नहीं" }}</div></div>
+  </div>
+</div>
+
+<h2 class="section-title" style="font-size:1.1rem;">सभी 27 नक्षत्र व उनके स्वामी ग्रह</h2>
+<table class="list-table">
+  <tr><th>क्र.</th><th>नक्षत्र</th><th>स्वामी ग्रह</th><th>गण्ड मूल</th></tr>
+  {% for n in nak_list %}
+  <tr {% if n.index == p.nakshatra_index %}style="background:#fff3e0;font-weight:700;"{% endif %}>
+    <td>{{ n.index + 1 }}</td>
+    <td>{{ n.name }}</td>
+    <td>{{ n.lord }}</td>
+    <td>{{ "गण्ड मूल" if n.ganda_moola else "—" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="disclaimer-box">गण्ड मूल नक्षत्र (अश्विनी, आश्लेषा, मघा, ज्येष्ठा, मूल, रेवती) में जन्मे बच्चों के लिए पारंपरिक रूप से शांति पूजा का विधान बताया जाता है — विस्तृत जानकारी हेतु योग्य पुरोहित से सम्पर्क करें।</p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

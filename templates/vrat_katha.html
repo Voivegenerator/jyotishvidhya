@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}व्रत कथा संग्रह - सत्यनारायण, एकादशी, करवा चौथ, अहोई अष्टमी - ज्योतिषविद्या{% endblock %}
+{% block description %}सत्यनारायण व्रत कथा, एकादशी माहात्म्य, करवा चौथ व अहोई अष्टमी व्रत कथा संक्षेप में हिन्दी में पढ़ें।{% endblock %}
+{% block content %}
+<h1 class="section-title">व्रत कथा संग्रह</h1>
+<div class="card-grid">
+  {% for k in kathas %}
+  <div class="feature-card" id="{{ k.slug }}">
+    <h3>{{ k.title }}</h3>
+    <p>{{ k.summary }}</p>
+  </div>
+  {% endfor %}
+</div>
+<p style="margin-top:20px;"><a href="{{ url_for('vrat_festival') }}">सभी व्रत व त्योहारों की तारीखें देखें →</a></p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

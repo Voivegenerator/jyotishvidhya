@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}विवाह व शुभ कार्य मुहूर्त तिथियाँ - ज्योतिषविद्या{% endblock %}
+{% block description %}आगामी विवाह, गृह प्रवेश व वाहन क्रय हेतु शुभ मुहूर्त तिथियाँ — रिक्ता तिथि, भद्रा व गण्ड मूल नक्षत्र रहित तिथियों की सूची।{% endblock %}
+{% block content %}
+<h1 class="section-title">विवाह व शुभ कार्य मुहूर्त तिथियाँ — {{ city.name }}</h1>
+<p>नीचे दी गई तिथियाँ रिक्ता तिथि (चतुर्थी, नवमी, चतुर्दशी), अमावस्या, भद्रा (विष्टि करण) व गण्ड मूल नक्षत्र को हटाकर शुक्ल पक्ष में से चुनी गई हैं। यह सूची सामान्य पंचांग नियमों पर आधारित है — विवाह, गृह प्रवेश, वाहन क्रय जैसे महत्वपूर्ण कार्यों हेतु अंतिम निर्णय लेने से पूर्व कृपया योग्य ज्योतिषी से व्यक्तिगत कुंडली मिलान सहित परामर्श अवश्य लें।</p>
+
+<form class="city-select" method="get" style="margin-bottom:14px;">
+  <select name="city" onchange="this.form.submit()">
+    {% for key, c in cities.items() %}
+    <option value="{{ key }}" {% if key==city_key %}selected{% endif %}>{{ c.name }}</option>
+    {% endfor %}
+  </select>
+</form>
+
+<table class="list-table">
+  <tr><th>तारीख</th><th>वार</th><th>तिथि</th><th>नक्षत्र</th></tr>
+  {% for g in good_dates %}
+  <tr>
+    <td>{{ g.date.strftime('%d %B %Y') }}</td>
+    <td>{{ g.p.vara_name_hi }}</td>
+    <td>{{ g.p.tithi_name_hi }}</td>
+    <td>{{ g.p.nakshatra_name_hi }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="disclaimer-box">यह सूची केवल सामान्य पंचांग नियमों (रिक्ता तिथि, भद्रा, गण्ड मूल) पर आधारित है। विवाह मुहूर्त हेतु वर-वधू की कुंडली में गुरु व शुक्र तारा-बल, शुद्धि व अन्य कई बातें भी देखी जाती हैं, इसलिए अंतिम मुहूर्त किसी अनुभवी पुरोहित से ही निश्चित करवाएं।</p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

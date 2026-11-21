@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}राशि अनुसार रत्न व रुद्राक्ष - ज्योतिषविद्या{% endblock %}
+{% block description %}सभी 12 राशियों के अनुसार रत्न, रुद्राक्ष, शुभ दिन व शुभ अंक की पूरी सूची।{% endblock %}
+{% block content %}
+<h1 class="section-title">राशि अनुसार रत्न व रुद्राक्ष</h1>
+<p>अपनी राशि के स्वामी ग्रह के अनुसार रत्न व रुद्राक्ष धारण करने की परंपरागत मान्यता है। किसी भी रत्न को धारण करने से पूर्व अपनी जन्म कुंडली के आधार पर किसी योग्य ज्योतिषी से परामर्श अवश्य लें, क्योंकि ग्रहों की स्थिति व्यक्ति-व्यक्ति अनुसार भिन्न होती है।</p>
+<table class="list-table">
+  <tr><th>राशि</th><th>स्वामी ग्रह</th><th>रत्न</th><th>रुद्राक्ष</th><th>शुभ दिन</th><th>शुभ अंक</th></tr>
+  {% for g in data %}
+  <tr>
+    <td>{{ g.rashi_hi }} ({{ g.rashi_en }})</td>
+    <td>{{ g.lord }}</td>
+    <td>{{ g.gemstone }}</td>
+    <td>{{ g.rudraksha }}</td>
+    <td>{{ g.day }}</td>
+    <td>{{ g.number }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p><a href="{{ url_for('rashifal') }}">अपनी राशि का आज का राशिफल देखें →</a></p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

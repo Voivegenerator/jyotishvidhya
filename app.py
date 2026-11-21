@@ -192,6 +192,148 @@ def kundali():
     )
 
 
+@app.route("/nakshatra")
+def nakshatra_page():
+    city_key = request.args.get("city", "new-delhi")
+    city = CITIES.get(city_key, CITIES["new-delhi"])
+    now = datetime.now()
+    p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
+    nak_list = []
+    for i, name in enumerate(pg.NAKSHATRA_NAMES_HI):
+        nak_list.append({
+            "index": i, "name": name, "lord": pg.NAKSHATRA_LORD_HI[i],
+            "ganda_moola": i in pg.GANDA_MOOLA_INDICES,
+        })
+    return render_template(
+        "nakshatra.html", p=p, nak_list=nak_list, city=city, city_key=city_key, now=now,
+    )
+
+
+@app.route("/panchang-utilities")
+def panchang_utilities():
+    city_key = request.args.get("city", "new-delhi")
+    city = CITIES.get(city_key, CITIES["new-delhi"])
+    now = datetime.now()
+    p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
+    vara_sun0 = now.isoweekday() % 7
+    rk = pg.calc_rahu_kalam(p["sunrise"], p["sunset"], vara_sun0)
+    abhijit = pg.calc_abhijit_muhurat(p["sunrise"], p["sunset"])
+    ganda_moola = p["nakshatra_index"] in pg.GANDA_MOOLA_INDICES
+    bhadra = (p["karana_name_hi"] == "विष्टि")
+    return render_template(
+        "panchang_utilities.html", p=p, city=city, city_key=city_key, now=now,
+        rahu_kalam=rk, abhijit=abhijit, ganda_moola=ganda_moola, bhadra=bhadra,
+    )
+
+
+@app.route("/shubh-muhurat")
+def shubh_muhurat():
+    city_key = request.args.get("city", "new-delhi")
+    city = CITIES.get(city_key, CITIES["new-delhi"])
+    now = datetime.now()
+    good_dates = []
+    d = now
+    count = 0
+    while len(good_dates) < 15 and count < 150:
+        dt = datetime(d.year, d.month, d.day, 12)
+        p = pg.calc_panchang(dt, city["lat"], city["lon"], city["tz"])
+        if (
+            p["tithi_index"] not in pg.RIKTA_TITHI_INDICES
+            and p["karana_name_hi"] != "विष्टि"
+            and p["nakshatra_index"] not in pg.GANDA_MOOLA_INDICES
+            and p["paksha"] == "शुक्ल पक्ष"
+        ):
+            good_dates.append({"date": dt, "p": p})
+        d = d + timedelta(days=1)
+        count += 1
+    return render_template(
+        "shubh_muhurat.html", good_dates=good_dates, city=city, city_key=city_key, now=now,
+    )
+
+
+@app.route("/gemstone")
+def gemstone():
+    return render_template("gemstone.html", data=pg.GEMSTONE_DATA)
+
+
+@app.route("/vrat-katha")
+def vrat_katha():
+    return render_template("vrat_katha.html", kathas=pg.VRAT_KATHA_DATA)
+
+
+def _parse_birth_form(form):
+    name = form.get("name", "")
+    bdate = form.get("date")
+    btime = form.get("time", "12:00")
+    city_key = form.get("city", "new-delhi")
+    city = CITIES.get(city_key, CITIES["new-delhi"])
+    hh, mm = [int(x) for x in btime.split(":")]
+    y, mo, d = [int(x) for x in bdate.split("-")]
+    dt = datetime(y, mo, d, hh, mm)
+    return name, dt, city
+
+
+@app.route("/mangal-dosha", methods=["GET", "POST"])
+def mangal_dosha():
+    chart = None
+    error = None
+    form = {}
+    result = None
+    chart_meta = None
+    if request.method == "POST":
+        form = request.form.to_dict()
+        try:
+            name, dt, city = _parse_birth_form(form)
+            chart = pg.calc_birth_chart(dt, city["lat"], city["lon"], city["tz"])
+            chart_meta = {"name": name, "dt": dt, "city": city["name"]}
+
+            lagna_idx = int(chart["Lagna"]["longitude"] // 30)
+            moon_idx = int(chart["Moon"]["longitude"] // 30)
+            mars_idx = int(chart["Mars"]["longitude"] // 30)
+            house_from_lagna = ((mars_idx - lagna_idx) % 12) + 1
+            house_from_moon = ((mars_idx - moon_idx) % 12) + 1
+            manglik_houses = {1, 2, 4, 7, 8, 12}
+            is_manglik = house_from_lagna in manglik_houses or house_from_moon in manglik_houses
+            result = {
+                "is_manglik": is_manglik,
+                "house_from_lagna": house_from_lagna,
+                "house_from_moon": house_from_moon,
+            }
+        except Exception:
+            error = "कृपया सही जन्म तिथि, समय और शहर दर्ज करें।"
+    return render_template(
+        "mangal_dosha.html", chart=chart, chart_meta=chart_meta, result=result,
+        error=error, form=form,
+    )
+
+
+@app.route("/kalasarpa-yoga", methods=["GET", "POST"])
+def kalasarpa_yoga():
+    chart = None
+    error = None
+    form = {}
+    result = None
+    chart_meta = None
+    if request.method == "POST":
+        form = request.form.to_dict()
+        try:
+            name, dt, city = _parse_birth_form(form)
+            chart = pg.calc_birth_chart(dt, city["lat"], city["lon"], city["tz"])
+            chart_meta = {"name": name, "dt": dt, "city": city["name"]}
+
+            rahu_lon = chart["Rahu"]["longitude"]
+            grahas = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+            diffs = [((chart[g]["longitude"] - rahu_lon) % 360) for g in grahas]
+            is_kalasarpa = all(d < 180 for d in diffs) or all(d > 180 for d in diffs)
+            result = {"is_kalasarpa": is_kalasarpa}
+        except Exception:
+            error = "कृपया सही जन्म तिथि, समय और शहर दर्ज करें।"
+    return render_template(
+        "kalasarpa_yoga.html", chart=chart, chart_meta=chart_meta, result=result,
+        error=error, form=form,
+    )
+
+
 @app.route("/about")
 def about():
     return render_template("about.html")
@@ -231,7 +373,9 @@ def robots_txt():
 def sitemap_xml():
     base = request.url_root.rstrip("/")
     paths = ["/", "/calendar", "/rashifal", "/muhurat", "/vrat-festival",
-             "/kundali", "/about", "/privacy-policy", "/terms", "/contact"]
+             "/kundali", "/about", "/privacy-policy", "/terms", "/contact",
+             "/nakshatra", "/panchang-utilities", "/shubh-muhurat", "/gemstone",
+             "/vrat-katha", "/mangal-dosha", "/kalasarpa-yoga"]
     urls = "".join(f"<url><loc>{base}{p}</loc></url>" for p in paths)
     xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>'
     return Response(xml, mimetype="application/xml")

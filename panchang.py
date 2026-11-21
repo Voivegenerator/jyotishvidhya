@@ -71,6 +71,56 @@ GRAHA_HI = {
     "Jupiter": "गुरु", "Venus": "शुक्र", "Saturn": "शनि",
 }
 
+# Ganda Moola nakshatras (0-indexed into NAKSHATRA_NAMES_HI)
+GANDA_MOOLA_INDICES = {0, 8, 9, 17, 18, 26}  # Ashwini, Ashlesha, Magha, Jyeshtha, Mula, Revati
+
+NAKSHATRA_LORD_HI = [
+    "केतु", "शुक्र", "सूर्य", "चन्द्र", "मंगल", "राहु", "गुरु", "शनि", "बुध",
+    "केतु", "शुक्र", "सूर्य", "चन्द्र", "मंगल", "राहु", "गुरु", "शनि", "बुध",
+    "केतु", "शुक्र", "सूर्य", "चन्द्र", "मंगल", "राहु", "गुरु", "शनि", "बुध",
+]
+
+# Rikta tithis (4th, 9th, 14th in each paksha) + Amavasya - traditionally avoided for shubh karya
+RIKTA_TITHI_INDICES = {3, 8, 13, 18, 23, 28, 29}
+
+GEMSTONE_DATA = [
+    {"rashi_hi": "मेष", "rashi_en": "Mesha", "lord": "मंगल", "gemstone": "मूंगा (Red Coral)", "rudraksha": "तीन मुखी रुद्राक्ष", "day": "मंगलवार", "number": 9},
+    {"rashi_hi": "वृषभ", "rashi_en": "Vrishabha", "lord": "शुक्र", "gemstone": "हीरा / सफेद पुखराज", "rudraksha": "छह मुखी रुद्राक्ष", "day": "शुक्रवार", "number": 6},
+    {"rashi_hi": "मिथुन", "rashi_en": "Mithuna", "lord": "बुध", "gemstone": "पन्ना (Emerald)", "rudraksha": "चार मुखी रुद्राक्ष", "day": "बुधवार", "number": 5},
+    {"rashi_hi": "कर्क", "rashi_en": "Karka", "lord": "चन्द्र", "gemstone": "मोती (Pearl)", "rudraksha": "दो मुखी रुद्राक्ष", "day": "सोमवार", "number": 2},
+    {"rashi_hi": "सिंह", "rashi_en": "Simha", "lord": "सूर्य", "gemstone": "माणिक्य (Ruby)", "rudraksha": "एक मुखी / बारह मुखी रुद्राक्ष", "day": "रविवार", "number": 1},
+    {"rashi_hi": "कन्या", "rashi_en": "Kanya", "lord": "बुध", "gemstone": "पन्ना (Emerald)", "rudraksha": "चार मुखी रुद्राक्ष", "day": "बुधवार", "number": 5},
+    {"rashi_hi": "तुला", "rashi_en": "Tula", "lord": "शुक्र", "gemstone": "हीरा (Diamond)", "rudraksha": "छह मुखी रुद्राक्ष", "day": "शुक्रवार", "number": 6},
+    {"rashi_hi": "वृश्चिक", "rashi_en": "Vrishchika", "lord": "मंगल", "gemstone": "मूंगा (Red Coral)", "rudraksha": "तीन मुखी रुद्राक्ष", "day": "मंगलवार", "number": 9},
+    {"rashi_hi": "धनु", "rashi_en": "Dhanu", "lord": "गुरु", "gemstone": "पुखराज (Yellow Sapphire)", "rudraksha": "पाँच मुखी रुद्राक्ष", "day": "गुरुवार", "number": 3},
+    {"rashi_hi": "मकर", "rashi_en": "Makara", "lord": "शनि", "gemstone": "नीलम (Blue Sapphire)", "rudraksha": "सात मुखी रुद्राक्ष", "day": "शनिवार", "number": 8},
+    {"rashi_hi": "कुम्भ", "rashi_en": "Kumbha", "lord": "शनि", "gemstone": "नीलम (Blue Sapphire)", "rudraksha": "सात मुखी रुद्राक्ष", "day": "शनिवार", "number": 8},
+    {"rashi_hi": "मीन", "rashi_en": "Meena", "lord": "गुरु", "gemstone": "पुखराज (Yellow Sapphire)", "rudraksha": "पाँच मुखी रुद्राक्ष", "day": "गुरुवार", "number": 3},
+]
+
+VRAT_KATHA_DATA = [
+    {
+        "slug": "satyanarayan",
+        "title": "श्री सत्यनारायण व्रत कथा",
+        "summary": "काशी नगरी में भ्रमण के दौरान ब्राह्मणों के एक समूह ने नारद मुनि से दुःख दूर करने और सुख पाने का उपाय पूछा। नारद जी ने उन्हें भगवान विष्णु के सत्यनारायण स्वरूप की कथा सुनाई और बताया कि पूर्णिमा अथवा एकादशी के दिन श्रद्धापूर्वक व्रत व पूजन करने से घर में सुख-समृद्धि आती है। कथा में एक निर्धन ब्राह्मण, एक लकड़हारा, एक राजा और एक व्यापारी की कहानियाँ आती हैं, जिन्होंने व्रत का संकल्प लेकर बाद में उसे भुला दिया और कष्ट भोगे, परंतु पुनः श्रद्धापूर्वक व्रत करने पर उनके सभी दुःख दूर हो गए। इस कथा का मूल संदेश है — सत्य, श्रद्धा और संकल्प की पूर्ति का महत्व।",
+    },
+    {
+        "slug": "ekadashi",
+        "title": "एकादशी व्रत माहात्म्य",
+        "summary": "पौराणिक मान्यता के अनुसार एकादशी तिथि भगवान विष्णु को अत्यंत प्रिय है। कथा के अनुसार प्राचीन समय में 'मृदुमान्य' नामक असुर का नाश करने के लिए देवी एकादशी स्वयं भगवान विष्णु की शक्ति से प्रकट हुई थीं, इसीलिए इस तिथि का नाम एकादशी पड़ा। माना जाता है कि एकादशी के दिन निराहार अथवा फलाहार व्रत रखने और भगवान विष्णु की पूजा करने से व्यक्ति के पापों का नाश होता है तथा मोक्ष की प्राप्ति होती है। हर माह में दो एकादशी (शुक्ल व कृष्ण पक्ष) आती हैं और प्रत्येक का अलग-अलग नाम व महत्व होता है।",
+    },
+    {
+        "slug": "karwa-chauth",
+        "title": "करवा चौथ व्रत कथा",
+        "summary": "एक प्रचलित कथा के अनुसार वीरवती नामक एक रानी ने अपने पति की दीर्घायु के लिए निर्जला करवा चौथ व्रत रखा था, परंतु भूख-प्यास से व्याकुल होकर उसने चन्द्रमा के समय से पहले ही व्रत तोड़ लिया, जिससे उसके पति पर संकट आ गया। बाद में श्रद्धापूर्वक विधिवत व्रत पूर्ण करने पर उसके पति का जीवन पुनः सामान्य हो गया। इसी कारण इस दिन सुहागिन स्त्रियाँ अपने पति की लंबी आयु व सुखी दांपत्य जीवन की कामना से सूर्योदय से चन्द्रोदय तक निर्जला व्रत रखती हैं और रात में चन्द्र दर्शन के पश्चात व्रत खोलती हैं।",
+    },
+    {
+        "slug": "ahoi-ashtami",
+        "title": "अहोई अष्टमी व्रत कथा",
+        "summary": "कथा के अनुसार एक साहूकार की पत्नी से भूलवश स्याहु (साही) के बच्चे की मृत्यु हो गई, जिससे उसकी संतानों पर संकट आ गया। पंडित के बताए अनुसार उसने अहोई माता की पूजा व व्रत का संकल्प लिया और अपनी भूल के लिए क्षमा-याचना की, जिसके फलस्वरूप उसकी संतानें पुनः स्वस्थ व सुरक्षित हो गईं। इसी मान्यता के अनुसार संतान की दीर्घायु व सुरक्षा हेतु माताएँ कार्तिक कृष्ण अष्टमी को निर्जला व्रत रखकर संध्या में तारों को अर्घ्य देकर व्रत खोलती हैं।",
+    },
+]
+
 
 def lahiri_ayanamsha(date):
     """
@@ -263,6 +313,14 @@ def calc_rahu_kalam(sunrise, sunset, vara_index_sun0):
         "yamaganda": seg(YAMA_SEG[vara_index_sun0]),
         "gulika_kaal": seg(GULIKA_SEG[vara_index_sun0]),
     }
+
+
+def calc_abhijit_muhurat(sunrise, sunset):
+    """Abhijit Muhurat: the 8th of 15 muhurtas of the day, centred on solar noon."""
+    day_dur = sunset - sunrise
+    muhurat_dur = day_dur / 15
+    solar_noon = sunrise + day_dur / 2
+    return solar_noon - muhurat_dur / 2, solar_noon + muhurat_dur / 2
 
 
 def calc_birth_chart(dt_local, lat, lon, tz_offset_hours):

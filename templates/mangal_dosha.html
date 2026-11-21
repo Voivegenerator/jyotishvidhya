@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}मांगलिक दोष (मंगल दोष) जांच - निःशुल्क - ज्योतिषविद्या{% endblock %}
+{% block description %}अपनी जन्म तिथि, समय व स्थान से निःशुल्क मांगलिक दोष (मंगल दोष) जांचें — लग्न व चन्द्र राशि से मंगल की स्थिति के आधार पर।{% endblock %}
+{% block content %}
+<h1 class="section-title">निःशुल्क मांगलिक दोष जांच</h1>
+<form class="kundali-form" method="post" style="max-width:420px;">
+  <label>नाम</label>
+  <input type="text" name="name" value="{{ form.get('name','') }}" required>
+  <label>जन्म तिथि</label>
+  <input type="date" name="date" value="{{ form.get('date','') }}" required>
+  <label>जन्म समय</label>
+  <input type="time" name="time" value="{{ form.get('time','12:00') }}" required>
+  <label>जन्म स्थान</label>
+  <select name="city">
+    {% for key, c in cities.items() %}
+    <option value="{{ key }}">{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <p style="margin-top:14px;"><button class="btn" type="submit">मांगलिक दोष जांचें</button></p>
+</form>
+
+{% if error %}<p style="color:#b00;">{{ error }}</p>{% endif %}
+
+{% if result %}
+<h2 class="section-title">{{ chart_meta.name }} का मांगलिक दोष परिणाम</h2>
+<p>जन्म: {{ chart_meta.dt.strftime('%d %B %Y, %I:%M %p') }} — {{ chart_meta.city }}</p>
+<div class="panchang-grid">
+  <div class="p-item"><div class="label">लग्न से मंगल भाव</div><div class="value">{{ result.house_from_lagna }}वाँ भाव</div></div>
+  <div class="p-item"><div class="label">चन्द्र से मंगल भाव</div><div class="value">{{ result.house_from_moon }}वाँ भाव</div></div>
+  <div class="p-item"><div class="label">मांगलिक दोष</div><div class="value">{{ "हाँ — मांगलिक है" if result.is_manglik else "नहीं — मांगलिक नहीं है" }}</div></div>
+</div>
+<p style="margin-top:14px;">लग्न: {{ chart.Lagna.rashi_hi }} • चन्द्र राशि: {{ chart.Moon.rashi_hi }} • मंगल राशि: {{ chart.Mars.rashi_hi }}</p>
+<p class="disclaimer-box">पारंपरिक नियमानुसार, लग्न अथवा चन्द्र राशि से मंगल का 1, 2, 4, 7, 8 या 12वें भाव में होना मांगलिक दोष माना जाता है। गुरु व शुक्र की दृष्टि, नवांश कुंडली व अन्य कारकों से दोष का प्रभाव घट-बढ़ सकता है — विवाह से पूर्व किसी अनुभवी ज्योतिषी से कुंडली मिलान अवश्य करवाएं।</p>
+{% endif %}
+<p><a href="{{ url_for('kundali') }}">पूर्ण जन्म कुंडली देखें →</a> · <a href="{{ url_for('kalasarpa_yoga') }}">कालसर्प योग जांचें →</a></p>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

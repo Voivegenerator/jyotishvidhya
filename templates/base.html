@@ -17,12 +17,37 @@
   <div class="header-inner">
     <a class="logo" href="{{ url_for('home') }}">ज्योतिष<span>विद्या</span></a>
     <nav class="main-nav">
-      <a href="{{ url_for('home') }}">पंचांग</a>
+      <div class="nav-item">
+        <a href="{{ url_for('home') }}">पंचांग</a>
+        <div class="dropdown-menu">
+          <a href="{{ url_for('home') }}">आज का पंचांग</a>
+          <a href="{{ url_for('calendar_view') }}">मासिक पंचांग (कैलेंडर)</a>
+          <a href="{{ url_for('nakshatra_page') }}">नक्षत्र विवरण</a>
+          <a href="{{ url_for('panchang_utilities') }}">राहु काल, अभिजीत व अन्य उपयोगिताएँ</a>
+        </div>
+      </div>
       <a href="{{ url_for('calendar_view') }}">कैलेंडर</a>
       <a href="{{ url_for('rashifal') }}">राशिफल</a>
-      <a href="{{ url_for('muhurat') }}">मुहूर्त</a>
+      <div class="nav-item">
+        <a href="{{ url_for('muhurat') }}">मुहूर्त</a>
+        <div class="dropdown-menu">
+          <a href="{{ url_for('muhurat') }}">चौघड़िया व राहु काल</a>
+          <a href="{{ url_for('shubh_muhurat') }}">विवाह व शुभ कार्य मुहूर्त तिथियाँ</a>
+          <a href="{{ url_for('panchang_utilities') }}">अभिजीत मुहूर्त व भद्रा</a>
+        </div>
+      </div>
       <a href="{{ url_for('vrat_festival') }}">व्रत-त्योहार</a>
-      <a href="{{ url_for('kundali') }}">कुंडली</a>
+      <div class="nav-item">
+        <a href="{{ url_for('kundali') }}">कुंडली</a>
+        <div class="dropdown-menu">
+          <a href="{{ url_for('kundali') }}">जन्म कुंडली बनाएं</a>
+          <a href="{{ url_for('mangal_dosha') }}">मांगलिक दोष जांच</a>
+          <a href="{{ url_for('kalasarpa_yoga') }}">कालसर्प योग जांच</a>
+          <a href="{{ url_for('gemstone') }}">राशि अनुसार रत्न व रुद्राक्ष</a>
+        </div>
+      </div>
+      <a href="{{ url_for('vrat_katha') }}">व्रत कथा</a>
+      <a href="https://ebookwala.github.io" target="_blank" rel="noopener">📚 पुस्तकें</a>
     </nav>
   </div>
 </header>
