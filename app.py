@@ -2,12 +2,21 @@ import json
 import os
 from datetime import datetime, timedelta, date as date_cls
 
+import pytz
 from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 
 import panchang as pg
 import chatbot
 
 app = Flask(__name__)
+
+IST = pytz.timezone("Asia/Kolkata")
+
+
+def now_ist():
+    """Current naive datetime in Indian Standard Time, regardless of the
+    server's own clock/timezone (Render's servers run in UTC)."""
+    return datetime.now(IST).replace(tzinfo=None)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(BASE_DIR, "data", "festivals.json"), encoding="utf-8") as f:
@@ -44,14 +53,14 @@ app.jinja_env.filters["fmt_t"] = fmt_t
 
 @app.context_processor
 def inject_globals():
-    return {"cities": CITIES, "current_year": datetime.now().year}
+    return {"cities": CITIES, "current_year": now_ist().year}
 
 
 @app.route("/")
 def home():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    now = datetime.now()
+    now = now_ist()
     p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
 
     today_str = now.strftime("%Y-%m-%d")
@@ -69,7 +78,7 @@ def panchang_for_date(datestr):
     try:
         dt = datetime.strptime(datestr, "%Y-%m-%d").replace(hour=12)
     except ValueError:
-        dt = datetime.now()
+        dt = now_ist()
     p = pg.calc_panchang(dt, city["lat"], city["lon"], city["tz"])
     prev_day = (dt - timedelta(days=1)).strftime("%Y-%m-%d")
     next_day = (dt + timedelta(days=1)).strftime("%Y-%m-%d")
@@ -82,7 +91,7 @@ def panchang_for_date(datestr):
 @app.route("/calendar")
 @app.route("/calendar/<int:year>/<int:month>")
 def calendar_view(year=None, month=None):
-    now = datetime.now()
+    now = now_ist()
     year = year or now.year
     month = month or now.month
     city_key = request.args.get("city", "new-delhi")
@@ -122,7 +131,7 @@ HINDI_MONTHS = ["जनवरी", "फ़रवरी", "मार्च", "अ
 @app.route("/rashifal")
 @app.route("/rashifal/<rashi>")
 def rashifal(rashi=None):
-    now = datetime.now()
+    now = now_ist()
     day_of_year = now.timetuple().tm_yday
     results = {}
     for name, info in RASHIFAL.items():
@@ -137,7 +146,7 @@ def rashifal(rashi=None):
 def muhurat():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    datestr = request.args.get("date") or datetime.now().strftime("%Y-%m-%d")
+    datestr = request.args.get("date") or now_ist().strftime("%Y-%m-%d")
     dt = datetime.strptime(datestr, "%Y-%m-%d").replace(hour=12)
 
     p_today = pg.calc_panchang(dt, city["lat"], city["lon"], city["tz"])
@@ -158,7 +167,7 @@ def muhurat():
 
 @app.route("/vrat-festival")
 def vrat_festival():
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = now_ist().strftime("%Y-%m-%d")
     past = [f for f in FESTIVALS if f["date"] < today_str]
     upcoming = [f for f in FESTIVALS if f["date"] >= today_str]
     return render_template("vrat.html", upcoming=upcoming, past=past[-5:])
@@ -197,7 +206,7 @@ def kundali():
 def nakshatra_page():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    now = datetime.now()
+    now = now_ist()
     p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
     nak_list = []
     for i, name in enumerate(pg.NAKSHATRA_NAMES_HI):
@@ -214,7 +223,7 @@ def nakshatra_page():
 def panchang_utilities():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    now = datetime.now()
+    now = now_ist()
     p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
     vara_sun0 = now.isoweekday() % 7
     rk = pg.calc_rahu_kalam(p["sunrise"], p["sunset"], vara_sun0)
@@ -231,7 +240,7 @@ def panchang_utilities():
 def shubh_muhurat():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    now = datetime.now()
+    now = now_ist()
     good_dates = []
     d = now
     count = 0
@@ -397,7 +406,7 @@ def api_chat():
 def api_panchang():
     city_key = request.args.get("city", "new-delhi")
     city = CITIES.get(city_key, CITIES["new-delhi"])
-    datestr = request.args.get("date") or datetime.now().strftime("%Y-%m-%d")
+    datestr = request.args.get("date") or now_ist().strftime("%Y-%m-%d")
     dt = datetime.strptime(datestr, "%Y-%m-%d").replace(hour=12)
     p = pg.calc_panchang(dt, city["lat"], city["lon"], city["tz"])
     out = {k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in p.items()}
