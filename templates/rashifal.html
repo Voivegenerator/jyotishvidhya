@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="section-title">आज का राशिफल — {{ now.strftime('%d %B %Y') }}</h1>
+<div class="card-grid">
+  {% for name, r in results.items() %}
+  <div class="rashi-card">
+    <h3>{{ name }} ({{ r.en }})</h3>
+    <div class="rashi-meta">स्वामी: {{ r.lord }} &middot; तत्व: {{ r.element }} &middot; शुभ रंग: {{ r.lucky_color }} &middot; शुभ अंक: {{ r.lucky_number }}</div>
+    <p>{{ r.today }}</p>
+  </div>
+  {% endfor %}
+</div>
+<div class="ad-slot">Advertisement</div>
+<p class="disclaimer-box">यह राशिफल सामान्य ज्योतिषीय सिद्धांतों पर आधारित है और केवल मार्गदर्शन व मनोरंजन हेतु है।</p>
+{% endblock %}

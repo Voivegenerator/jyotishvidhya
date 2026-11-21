@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="section-title">मुहूर्त — {{ dt.strftime('%d %B %Y') }} ({{ city.name }})</h1>
+
+<h2 class="section-title" style="font-size:1.1rem;">अशुभ काल</h2>
+<div class="panchang-grid">
+  <div class="p-item"><div class="label">राहु काल</div><div class="value">{{ rahu_kalam.rahu_kaal[0] | fmt_t }} - {{ rahu_kalam.rahu_kaal[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">यमगण्ड</div><div class="value">{{ rahu_kalam.yamaganda[0] | fmt_t }} - {{ rahu_kalam.yamaganda[1] | fmt_t }}</div></div>
+  <div class="p-item"><div class="label">गुलिक काल</div><div class="value">{{ rahu_kalam.gulika_kaal[0] | fmt_t }} - {{ rahu_kalam.gulika_kaal[1] | fmt_t }}</div></div>
+</div>
+
+<h2 class="section-title" style="font-size:1.1rem;">दिन का चौघड़िया (सूर्योदय से सूर्यास्त)</h2>
+<table class="list-table">
+  <tr><th>समय</th><th>चौघड़िया</th><th>फल</th></tr>
+  {% for s in day_slots %}
+  <tr>
+    <td>{{ s.start | fmt_t }} - {{ s.end | fmt_t }}</td>
+    <td>{{ s.name_hi }}</td>
+    <td>{{ "शुभ" if s.good else "अशुभ" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2 class="section-title" style="font-size:1.1rem;">रात्रि का चौघड़िया (सूर्यास्त से सूर्योदय)</h2>
+<table class="list-table">
+  <tr><th>समय</th><th>चौघड़िया</th><th>फल</th></tr>
+  {% for s in night_slots %}
+  <tr>
+    <td>{{ s.start | fmt_t }} - {{ s.end | fmt_t }}</td>
+    <td>{{ s.name_hi }}</td>
+    <td>{{ "शुभ" if s.good else "अशुभ" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="section-title">हिन्दू कैलेंडर — {{ month_name_hi }} {{ year }}</h1>
+<div class="cal-nav">
+  <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}?city={{ city_key }}">← पिछला माह</a>
+  <form method="get" style="display:inline;">
+    <select name="city" onchange="this.form.submit()">
+      {% for key, c in cities.items() %}
+      <option value="{{ key }}" {% if key==city_key %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}?city={{ city_key }}">अगला माह →</a>
+</div>
+<table class="calendar-table">
+  <tr>
+    <th>रवि</th><th>सोम</th><th>मंगल</th><th>बुध</th><th>गुरु</th><th>शुक्र</th><th>शनि</th>
+  </tr>
+  {% for week in month_days %}
+  <tr>
+    {% for day in week %}
+    <td>
+      {% if day != 0 %}
+        <div class="cal-day-num">{{ day }}</div>
+        <div class="cal-tithi">{{ days_data[day].tithi_name_hi }}</div>
+        <div class="cal-tithi">{{ days_data[day].nakshatra_name_hi }}</div>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

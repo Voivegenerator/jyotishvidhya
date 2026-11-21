@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}ज्योतिषविद्या - पंचांग, कुंडली, राशिफल, मुहूर्त{% endblock %}</title>
+<meta name="description" content="{% block description %}ज्योतिषविद्या - निःशुल्क हिन्दी पंचांग, जन्म कुंडली, दैनिक राशिफल, शुभ मुहूर्त, व्रत-त्योहार कैलेंडर{% endblock %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<!-- AdSense: replace ca-pub-XXXXXXXXXXXXXXXX with real publisher ID before going live -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="{{ url_for('home') }}">ज्योतिष<span>विद्या</span></a>
+    <nav class="main-nav">
+      <a href="{{ url_for('home') }}">पंचांग</a>
+      <a href="{{ url_for('calendar_view') }}">कैलेंडर</a>
+      <a href="{{ url_for('rashifal') }}">राशिफल</a>
+      <a href="{{ url_for('muhurat') }}">मुहूर्त</a>
+      <a href="{{ url_for('vrat_festival') }}">व्रत-त्योहार</a>
+      <a href="{{ url_for('kundali') }}">कुंडली</a>
+    </nav>
+  </div>
+</header>
+<main>
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <strong>ज्योतिषविद्या</strong><br>
+      निःशुल्क हिन्दी पंचांग एवं ज्योतिष सेवा<br>
+      &copy; {{ current_year }} JyotishVidhya
+    </div>
+    <div>
+      <a href="{{ url_for('about') }}">हमारे बारे में</a> &middot;
+      <a href="{{ url_for('contact') }}">संपर्क करें</a> &middot;
+      <a href="{{ url_for('privacy') }}">प्राइवेसी पॉलिसी</a> &middot;
+      <a href="{{ url_for('terms') }}">नियम व शर्तें</a>
+    </div>
+  </div>
+  <div class="disclaimer-box" style="max-width:1100px;margin:14px auto 0;">
+    अस्वीकरण: इस वेबसाइट की सभी गणनाएं वैदिक ज्योतिष सिद्धांतों (लाहिड़ी अयनांश) पर आधारित खगोलीय गणना से की जाती हैं और केवल सामान्य जानकारी व मनोरंजन हेतु हैं। किसी भी महत्वपूर्ण जीवन-निर्णय से पहले कृपया योग्य ज्योतिषी से परामर्श लें।
+  </div>
+</footer>
+</body>
+</html>

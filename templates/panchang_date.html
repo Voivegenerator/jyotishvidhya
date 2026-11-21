@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-panchang">
+  <div class="hero-top">
+    <h1>पंचांग — {{ dt.strftime('%d %B %Y') }}, {{ p.vara_name_hi }}</h1>
+  </div>
+  <p>
+    <a href="{{ url_for('panchang_for_date', datestr=prev_day) }}?city={{ city_key }}">← पिछला दिन</a> |
+    <a href="{{ url_for('panchang_for_date', datestr=next_day) }}?city={{ city_key }}">अगला दिन →</a>
+  </p>
+  <div class="panchang-grid">
+    <div class="p-item"><div class="label">तिथि</div><div class="value">{{ p.tithi_name_hi }}</div></div>
+    <div class="p-item"><div class="label">पक्ष</div><div class="value">{{ p.paksha }}</div></div>
+    <div class="p-item"><div class="label">नक्षत्र</div><div class="value">{{ p.nakshatra_name_hi }} (पद {{ p.pada }})</div></div>
+    <div class="p-item"><div class="label">योग</div><div class="value">{{ p.yoga_name_hi }}</div></div>
+    <div class="p-item"><div class="label">करण</div><div class="value">{{ p.karana_name_hi }}</div></div>
+    <div class="p-item"><div class="label">सूर्योदय</div><div class="value">{{ p.sunrise | fmt_t }}</div></div>
+    <div class="p-item"><div class="label">सूर्यास्त</div><div class="value">{{ p.sunset | fmt_t }}</div></div>
+    <div class="p-item"><div class="label">चन्द्र राशि</div><div class="value">{{ p.moonsign_hi }}</div></div>
+    <div class="p-item"><div class="label">सूर्य राशि</div><div class="value">{{ p.sunsign_hi }}</div></div>
+  </div>
+</div>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

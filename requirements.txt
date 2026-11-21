@@ -1,0 +1,4 @@
+Flask==3.1.0
+ephem==4.2.1
+pytz==2026.6
+gunicorn==27.0.1

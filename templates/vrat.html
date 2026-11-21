@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="section-title">व्रत एवं त्योहार सूची</h1>
+<table class="list-table">
+  <tr><th>तारीख</th><th>नाम</th><th>प्रकार</th></tr>
+  {% for f in upcoming %}
+  <tr>
+    <td>{{ f.date }}</td>
+    <td>{{ f.name }}</td>
+    <td>{{ "व्रत" if f.type=="vrat" else "त्योहार" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

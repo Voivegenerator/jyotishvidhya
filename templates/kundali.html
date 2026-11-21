@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="section-title">निःशुल्क जन्म कुंडली</h1>
+<form class="kundali-form" method="post" style="max-width:420px;">
+  <label>नाम</label>
+  <input type="text" name="name" value="{{ form.get('name','') }}" required>
+  <label>जन्म तिथि</label>
+  <input type="date" name="date" value="{{ form.get('date','') }}" required>
+  <label>जन्म समय</label>
+  <input type="time" name="time" value="{{ form.get('time','12:00') }}" required>
+  <label>जन्म स्थान</label>
+  <select name="city">
+    {% for key, c in cities.items() %}
+    <option value="{{ key }}">{{ c.name }}</option>
+    {% endfor %}
+  </select>
+  <p style="margin-top:14px;"><button class="btn" type="submit">कुंडली बनाएं</button></p>
+</form>
+
+{% if error %}<p style="color:#b00;">{{ error }}</p>{% endif %}
+
+{% if chart %}
+<h2 class="section-title">{{ chart_meta.name }} की कुंडली</h2>
+<p>जन्म: {{ chart_meta.dt.strftime('%d %B %Y, %I:%M %p') }} — {{ chart_meta.city }}</p>
+<table class="list-table">
+  <tr><th>ग्रह / बिंदु</th><th>राशि</th><th>अंश</th></tr>
+  <tr><td>लग्न</td><td>{{ chart.Lagna.rashi_hi }}</td><td>{{ chart.Lagna.degree_in_rashi }}°</td></tr>
+  <tr><td>सूर्य</td><td>{{ chart.Sun.rashi_hi }}</td><td>{{ chart.Sun.degree_in_rashi }}°</td></tr>
+  <tr><td>चन्द्र</td><td>{{ chart.Moon.rashi_hi }}</td><td>{{ chart.Moon.degree_in_rashi }}°</td></tr>
+  <tr><td>मंगल</td><td>{{ chart.Mars.rashi_hi }}</td><td>{{ chart.Mars.degree_in_rashi }}°</td></tr>
+  <tr><td>बुध</td><td>{{ chart.Mercury.rashi_hi }}</td><td>{{ chart.Mercury.degree_in_rashi }}°</td></tr>
+  <tr><td>गुरु</td><td>{{ chart.Jupiter.rashi_hi }}</td><td>{{ chart.Jupiter.degree_in_rashi }}°</td></tr>
+  <tr><td>शुक्र</td><td>{{ chart.Venus.rashi_hi }}</td><td>{{ chart.Venus.degree_in_rashi }}°</td></tr>
+  <tr><td>शनि</td><td>{{ chart.Saturn.rashi_hi }}</td><td>{{ chart.Saturn.degree_in_rashi }}°</td></tr>
+  <tr><td>राहु</td><td>{{ chart.Rahu.rashi_hi }}</td><td>{{ chart.Rahu.degree_in_rashi }}°</td></tr>
+  <tr><td>केतु</td><td>{{ chart.Ketu.rashi_hi }}</td><td>{{ chart.Ketu.degree_in_rashi }}°</td></tr>
+</table>
+<p class="disclaimer-box">यह कुंडली लाहिड़ी अयनांश पर आधारित सरलीकृत (whole-sign) गणना है। विस्तृत दशा/भाव विश्लेषण हेतु किसी अनुभवी ज्योतिषी से सलाह लें।</p>
+{% endif %}
+<div class="ad-slot">Advertisement</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-panchang">
+  <div class="hero-top">
+    <h1>आज का पंचांग — {{ now.strftime('%d %B %Y') }}, {{ p.vara_name_hi }}</h1>
+    <form class="city-select" method="get">
+      <select name="city" onchange="this.form.submit()">
+        {% for key, c in cities.items() %}
+        <option value="{{ key }}" {% if key==city_key %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+  <p style="color:#8a6a4a;margin-top:-6px;">{{ city.name }} के लिए सटीक खगोलीय गणना पर आधारित</p>
+  <div class="panchang-grid">
+    <div class="p-item"><div class="label">तिथि</div><div class="value">{{ p.tithi_name_hi }}</div></div>
+    <div class="p-item"><div class="label">पक्ष</div><div class="value">{{ p.paksha }}</div></div>
+    <div class="p-item"><div class="label">नक्षत्र</div><div class="value">{{ p.nakshatra_name_hi }} (पद {{ p.pada }})</div></div>
+    <div class="p-item"><div class="label">योग</div><div class="value">{{ p.yoga_name_hi }}</div></div>
+    <div class="p-item"><div class="label">करण</div><div class="value">{{ p.karana_name_hi }}</div></div>
+    <div class="p-item"><div class="label">सूर्योदय</div><div class="value">{{ p.sunrise | fmt_t }}</div></div>
+    <div class="p-item"><div class="label">सूर्यास्त</div><div class="value">{{ p.sunset | fmt_t }}</div></div>
+    <div class="p-item"><div class="label">चन्द्र राशि</div><div class="value">{{ p.moonsign_hi }}</div></div>
+    <div class="p-item"><div class="label">सूर्य राशि</div><div class="value">{{ p.sunsign_hi }}</div></div>
+  </div>
+  <p style="margin-top:14px;"><a href="{{ url_for('muhurat') }}?city={{ city_key }}" class="btn">आज का राहु काल व चौघड़िया देखें →</a></p>
+</div>
+
+<div class="ad-slot">Advertisement</div>
+
+<h2 class="section-title">आने वाले व्रत एवं त्योहार</h2>
+<table class="list-table">
+  <tr><th>तारीख</th><th>नाम</th><th>प्रकार</th></tr>
+  {% for f in upcoming %}
+  <tr>
+    <td>{{ f.date }}</td>
+    <td>{{ f.name }}</td>
+    <td>{{ "व्रत" if f.type=="vrat" else "त्योहार" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p><a href="{{ url_for('vrat_festival') }}">पूरी व्रत-त्योहार सूची देखें →</a></p>
+
+<h2 class="section-title">ज्योतिषविद्या की सुविधाएँ</h2>
+<div class="card-grid">
+  <div class="feature-card"><h3>📅 दैनिक पंचांग</h3><p>तिथि, नक्षत्र, योग, करण, सूर्योदय-सूर्यास्त — किसी भी शहर व तारीख के लिए सटीक खगोलीय गणना।</p></div>
+  <div class="feature-card"><h3>🗓 हिन्दू कैलेंडर</h3><p>पूरे महीने का पंचांग एक साथ, मासिक कैलेंडर के रूप में।</p></div>
+  <div class="feature-card"><h3>🔮 दैनिक राशिफल</h3><p>सभी 12 राशियों के लिए आज का राशिफल, शुभ रंग व अंक के साथ।</p></div>
+  <div class="feature-card"><h3>⏰ मुहूर्त व चौघड़िया</h3><p>राहु काल, यमगण्ड, गुलिक काल एवं दिन-रात के 8-8 चौघड़िया।</p></div>
+  <div class="feature-card"><h3>🪔 व्रत व त्योहार</h3><p>एकादशी, प्रदोष, पूर्णिमा, अमावस्या व सभी प्रमुख हिन्दू त्योहारों की तारीखें।</p></div>
+  <div class="feature-card"><h3>🪐 जन्म कुंडली</h3><p>जन्म तिथि, समय व स्थान से लग्न व नवग्रह की स्थिति — निःशुल्क कुंडली निर्माण।</p></div>
+</div>
+{% endblock %}
