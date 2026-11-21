@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta, date as date_cls
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 
 import panchang as pg
 
@@ -210,6 +210,31 @@ def terms():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
+
+
+@app.route("/ads.txt")
+def ads_txt():
+    return send_from_directory(os.path.join(BASE_DIR, "static"), "ads.txt", mimetype="text/plain")
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    lines = [
+        "User-agent: *",
+        "Allow: /",
+        f"Sitemap: {request.url_root.rstrip('/')}/sitemap.xml",
+    ]
+    return Response("\n".join(lines), mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    base = request.url_root.rstrip("/")
+    paths = ["/", "/calendar", "/rashifal", "/muhurat", "/vrat-festival",
+             "/kundali", "/about", "/privacy-policy", "/terms", "/contact"]
+    urls = "".join(f"<url><loc>{base}{p}</loc></url>" for p in paths)
+    xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>'
+    return Response(xml, mimetype="application/xml")
 
 
 @app.route("/api/panchang")
