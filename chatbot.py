@@ -8,9 +8,18 @@ computed data (panchang.py, data/rashifal.json, data/festivals.json).
 Zero ongoing cost: everything here is plain Python string matching plus
 the astronomical calculations the site already does for its pages.
 """
+import os
 from datetime import datetime
 
+import requests
+
 import panchang as pg
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_URL = (
+    f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+)
 
 GREETING_KW = ["नमस्ते", "नमस्कार", "hello", "hii", "hi", "hey", "जय श्री राम", "radhe radhe", "राधे राधे"]
 THANKS_KW = ["धन्यवाद", "शुक्रिया", "thanks", "thank you", "thx"]
@@ -130,6 +139,61 @@ def _gemstone_reply(rashi):
     return None
 
 
+def _build_context(festivals, rashifal_data):
+    """Short Hindi grounding text about today's panchang etc., given to Gemini
+    so free-form answers stay accurate instead of the model guessing dates."""
+    now = datetime.now()
+    p = pg.calc_panchang(now, DEFAULT_CITY["lat"], DEFAULT_CITY["lon"], DEFAULT_CITY["tz"])
+    today_str = now.strftime("%Y-%m-%d")
+    upcoming = [f"{f['date']} - {f['name']}" for f in festivals if f["date"] >= today_str][:5]
+    rashifal_lines = []
+    day_of_year = now.timetuple().tm_yday
+    for name, info in rashifal_data.items():
+        idx = day_of_year % len(info["daily"])
+        rashifal_lines.append(f"{name}: {info['daily'][idx]}")
+    return (
+        f"आज की तारीख {now.strftime('%d-%m-%Y')} ({p['vara_name_hi']}) है, नई दिल्ली के पंचांग अनुसार: "
+        f"तिथि {p['tithi_name_hi']}, नक्षत्र {p['nakshatra_name_hi']}, योग {p['yoga_name_hi']}, "
+        f"करण {p['karana_name_hi']}.\n"
+        f"आने वाले व्रत-त्योहार: {'; '.join(upcoming)}.\n"
+        f"आज का राशिफल:\n" + "\n".join(rashifal_lines)
+    )
+
+
+def _gemini_reply(message, festivals, rashifal_data):
+    """Call Google Gemini's free-tier API for a conversational answer, grounded
+    with today's real panchang/rashifal/festival data. Returns None on any
+    failure so the caller can fall back to the rule-based reply."""
+    if not GEMINI_API_KEY:
+        return None
+    context = _build_context(festivals, rashifal_data)
+    system_instruction = (
+        "आप 'ज्योतिषविद्या' नामक हिन्दी वैदिक ज्योतिष व पंचांग वेबसाइट के सहायक हैं। "
+        "हिन्दी में, संक्षेप में (अधिकतम 4-5 वाक्य) और विनम्रता से जवाब दें। "
+        "नीचे दिया गया डेटा सटीक और आज का है - तारीख, तिथि, नक्षत्र, राशिफल आदि के लिए हमेशा इसी डेटा का उपयोग करें, "
+        "अपने अनुमान से तारीख या पंचांग न बताएं। ज्योतिष के सामान्य सवालों का सामान्य ज्ञान से जवाब दे सकते हैं। "
+        "किसी गंभीर जीवन-निर्णय (विवाह, स्वास्थ्य, निवेश) पर हमेशा योग्य ज्योतिषी/विशेषज्ञ से सलाह लेने की सलाह दें।\n\n"
+        f"आज का डेटा:\n{context}"
+    )
+    payload = {
+        "system_instruction": {"parts": [{"text": system_instruction}]},
+        "contents": [{"role": "user", "parts": [{"text": message}]}],
+        "generationConfig": {"maxOutputTokens": 300, "temperature": 0.6},
+    }
+    try:
+        r = requests.post(
+            GEMINI_URL,
+            params={"key": GEMINI_API_KEY},
+            json=payload,
+            timeout=12,
+        )
+        r.raise_for_status()
+        data = r.json()
+        return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception:
+        return None
+
+
 def get_reply(message, festivals, rashifal_data):
     """Return a Hindi text reply for the given user message."""
     text = (message or "").strip()
@@ -198,6 +262,12 @@ def get_reply(message, festivals, rashifal_data):
             "मैं इनमें मदद कर सकता हूँ: आज का पंचांग, किसी राशि का राशिफल, राहु काल/शुभ मुहूर्त, "
             "आने वाले व्रत-त्योहार, राशि अनुसार रत्न-रुद्राक्ष, और कुंडली/मांगलिक/कालसर्प पेज तक पहुंचने में मार्गदर्शन।"
         )
+
+    # No fixed rule matched - try Gemini (if configured) for a free-form,
+    # data-grounded answer; otherwise show the built-in fallback.
+    gemini_answer = _gemini_reply(text, festivals, rashifal_data)
+    if gemini_answer:
+        return gemini_answer
 
     return (
         "माफ़ कीजिए, मैं यह ठीक से समझ नहीं पाया। आप पूछ सकते हैं जैसे: "
