@@ -15,6 +15,7 @@ body {
   background: var(--cream);
   color: var(--text);
   line-height: 1.6;
+  padding-bottom: 38px;
 }
 a { color: var(--saffron-dark); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -227,7 +228,7 @@ footer.site-footer {
 /* ---- Chat Agent Widget ---- */
 #jv-chat-toggle {
   position: fixed;
-  bottom: 20px;
+  bottom: 56px;
   right: 20px;
   width: 58px;
   height: 58px;
@@ -247,7 +248,7 @@ footer.site-footer {
 
 #jv-chat-window {
   position: fixed;
-  bottom: 90px;
+  bottom: 126px;
   right: 20px;
   width: 320px;
   max-width: 90vw;
@@ -302,4 +303,63 @@ footer.site-footer {
   padding: 0 16px;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* ---- Jyotish News Ticker (bottom strip) ---- */
+.news-ticker {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38px;
+  background: linear-gradient(135deg, var(--maroon), var(--saffron-dark));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  z-index: 500;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.25);
+  font-size: 0.85rem;
+}
+.news-ticker .ticker-label {
+  flex-shrink: 0;
+  height: 100%;
+  background: var(--gold);
+  color: var(--maroon);
+  font-weight: 700;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.news-ticker .ticker-track-wrap {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.news-ticker .ticker-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: ticker-scroll 55s linear infinite;
+  will-change: transform;
+}
+.news-ticker:hover .ticker-track { animation-play-state: paused; }
+.news-ticker .ticker-track a {
+  color: #fff !important;
+  margin-right: 46px;
+  text-decoration: none;
+}
+.news-ticker .ticker-track a:hover { text-decoration: underline; }
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 640px) {
+  .news-ticker .ticker-label { padding: 0 8px; font-size: 0.78rem; }
+  .news-ticker { font-size: 0.78rem; }
 }

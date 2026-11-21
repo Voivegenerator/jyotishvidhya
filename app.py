@@ -3,7 +3,7 @@ import os
 from datetime import datetime, timedelta, date as date_cls
 
 import pytz
-from flask import Flask, render_template, request, jsonify, Response, send_from_directory
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory, url_for
 
 import panchang as pg
 import chatbot
@@ -51,9 +51,65 @@ def fmt_t(dt):
 app.jinja_env.filters["fmt_t"] = fmt_t
 
 
+def build_ticker_items():
+    """Rotating Hindi jyotish 'news' strip items, computed fresh from today's
+    real panchang/muhurat/festival data (no static placeholder text)."""
+    now = now_ist()
+    city = CITIES["new-delhi"]
+    p = pg.calc_panchang(now, city["lat"], city["lon"], city["tz"])
+    vara_sun0 = now.isoweekday() % 7
+    rk = pg.calc_rahu_kalam(p["sunrise"], p["sunset"], vara_sun0)
+    abhijit = pg.calc_abhijit_muhurat(p["sunrise"], p["sunset"])
+
+    today_str = now.strftime("%Y-%m-%d")
+    upcoming = [f for f in FESTIVALS if f["date"] >= today_str][:3]
+
+    items = [
+        {
+            "text": f"🕉 आज {now.strftime('%d %B %Y')}, {p['vara_name_hi']} — {p['tithi_name_hi']}, "
+                    f"{p['nakshatra_name_hi']} नक्षत्र, {p['yoga_name_hi']} योग",
+            "url": url_for("home"),
+        },
+    ]
+    if rk["rahu_kaal"][0] and rk["rahu_kaal"][1]:
+        items.append({
+            "text": f"⏰ आज राहु काल {rk['rahu_kaal'][0].strftime('%I:%M %p')} - "
+                    f"{rk['rahu_kaal'][1].strftime('%I:%M %p')} बजे तक — इस दौरान शुभ कार्य न करें",
+            "url": url_for("muhurat"),
+        })
+    if abhijit[0] and abhijit[1]:
+        items.append({
+            "text": f"✨ आज अभिजीत मुहूर्त {abhijit[0].strftime('%I:%M %p')} - "
+                    f"{abhijit[1].strftime('%I:%M %p')} बजे — अत्यंत शुभ समय",
+            "url": url_for("panchang_utilities"),
+        })
+    for fest in upcoming:
+        items.append({
+            "text": f"🎉 आगामी पर्व: {fest['name']} — {fest['date']}",
+            "url": url_for("vrat_festival"),
+        })
+    items.append({
+        "text": "🔮 अपनी राशि का आज का राशिफल जानने के लिए यहाँ क्लिक करें",
+        "url": url_for("rashifal"),
+    })
+    items.append({
+        "text": "💍 मांगलिक दोष व कालसर्प योग अभी निःशुल्क जांचें",
+        "url": url_for("mangal_dosha"),
+    })
+    items.append({
+        "text": "💎 अपनी राशि अनुसार रत्न व रुद्राक्ष जानें",
+        "url": url_for("gemstone"),
+    })
+    return items
+
+
 @app.context_processor
 def inject_globals():
-    return {"cities": CITIES, "current_year": now_ist().year}
+    return {
+        "cities": CITIES,
+        "current_year": now_ist().year,
+        "ticker_items": build_ticker_items(),
+    }
 
 
 @app.route("/")

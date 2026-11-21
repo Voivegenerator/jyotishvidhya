@@ -81,6 +81,20 @@
   </div>
 </footer>
 
+<div class="news-ticker" role="marquee" aria-label="ज्योतिष समाचार पट्टी">
+  <div class="ticker-label">🕉 ज्योतिष समाचार</div>
+  <div class="ticker-track-wrap">
+    <div class="ticker-track">
+      {% for item in ticker_items %}
+      <a href="{{ item.url }}">{{ item.text }}</a>
+      {% endfor %}
+      {% for item in ticker_items %}
+      <a href="{{ item.url }}" aria-hidden="true" tabindex="-1">{{ item.text }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
 <button id="jv-chat-toggle" aria-label="ज्योतिष सहायक से बात करें">💬</button>
 <div id="jv-chat-window">
   <div id="jv-chat-header">
