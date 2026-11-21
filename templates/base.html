@@ -72,5 +72,83 @@
     अस्वीकरण: इस वेबसाइट की सभी गणनाएं वैदिक ज्योतिष सिद्धांतों (लाहिड़ी अयनांश) पर आधारित खगोलीय गणना से की जाती हैं और केवल सामान्य जानकारी व मनोरंजन हेतु हैं। किसी भी महत्वपूर्ण जीवन-निर्णय से पहले कृपया योग्य ज्योतिषी से परामर्श लें।
   </div>
 </footer>
+
+<button id="jv-chat-toggle" aria-label="ज्योतिष सहायक से बात करें">💬</button>
+<div id="jv-chat-window">
+  <div id="jv-chat-header">
+    <span>🙏 ज्योतिष सहायक</span>
+    <button id="jv-chat-close" aria-label="बंद करें">&times;</button>
+  </div>
+  <div id="jv-chat-messages"></div>
+  <form id="jv-chat-form">
+    <input id="jv-chat-input" type="text" placeholder="अपना सवाल लिखें... (जैसे: आज का पंचांग)" autocomplete="off">
+    <button id="jv-chat-send" type="submit">भेजें</button>
+  </form>
+</div>
+<script>
+(function () {
+  var toggle = document.getElementById('jv-chat-toggle');
+  var win = document.getElementById('jv-chat-window');
+  var closeBtn = document.getElementById('jv-chat-close');
+  var form = document.getElementById('jv-chat-form');
+  var input = document.getElementById('jv-chat-input');
+  var messages = document.getElementById('jv-chat-messages');
+  var greeted = false;
+
+  function addMsg(text, who) {
+    var div = document.createElement('div');
+    div.className = 'jv-msg ' + who;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function openChat() {
+    win.classList.add('open');
+    if (!greeted) {
+      greeted = true;
+      addMsg('नमस्ते! 🙏 मैं ज्योतिषविद्या का सहायक हूँ। आज का पंचांग, राशिफल, मुहूर्त या व्रत-त्योहार के बारे में पूछें।', 'bot');
+    }
+    input.focus();
+  }
+
+  toggle.addEventListener('click', function () {
+    if (win.classList.contains('open')) {
+      win.classList.remove('open');
+    } else {
+      openChat();
+    }
+  });
+  closeBtn.addEventListener('click', function () { win.classList.remove('open'); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    addMsg(text, 'user');
+    input.value = '';
+    var typing = document.createElement('div');
+    typing.className = 'jv-msg bot';
+    typing.textContent = '...';
+    messages.appendChild(typing);
+    messages.scrollTop = messages.scrollHeight;
+
+    fetch('{{ url_for("api_chat") }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        typing.remove();
+        addMsg(data.reply || 'माफ़ कीजिए, जवाब नहीं मिल पाया।', 'bot');
+      })
+      .catch(function () {
+        typing.remove();
+        addMsg('नेटवर्क में समस्या है, कृपया फिर कोशिश करें।', 'bot');
+      });
+  });
+})();
+</script>
 </body>
 </html>

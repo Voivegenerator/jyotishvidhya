@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, date as date_cls
 from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 
 import panchang as pg
+import chatbot
 
 app = Flask(__name__)
 
@@ -379,6 +380,17 @@ def sitemap_xml():
     urls = "".join(f"<url><loc>{base}{p}</loc></url>" for p in paths)
     xml = f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>'
     return Response(xml, mimetype="application/xml")
+
+
+@app.route("/api/chat", methods=["POST"])
+def api_chat():
+    data = request.get_json(silent=True) or {}
+    message = str(data.get("message", ""))[:500]
+    try:
+        reply = chatbot.get_reply(message, FESTIVALS, RASHIFAL)
+    except Exception:
+        reply = "माफ़ कीजिए, अभी जवाब देने में समस्या आ रही है। कृपया फिर से कोशिश करें।"
+    return jsonify({"reply": reply})
 
 
 @app.route("/api/panchang")
